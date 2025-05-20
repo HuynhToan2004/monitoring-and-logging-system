@@ -50,7 +50,7 @@ This project is a part of MLOps cource (CS317.P22), with members:
 
 ## Note
 - To see full demo video, access this link: [here](https://drive.google.com/drive/folders/1yMuBndtiyRO6WYN8pirCCLKDye0cDYQ4?usp=sharing) 
-- Feel free to check out this repository for a full MLOps pipeline through the link below: [here](https://github.com/locngocphan12/MLOPs-LicensePlateRecognition)
+- Feel free to check out this repository for a full MLOps pipeline through the link: [here](https://github.com/locngocphan12/MLOPs-LicensePlateRecognition)
 
 ## Collaborators
 <a href="https://github.com/luanntd">
