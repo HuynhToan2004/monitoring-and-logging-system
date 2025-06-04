@@ -8,3 +8,114 @@ services:
     ports:
       - "8070:8070"
     restart: always
+    networks: [monitoring]
+    volumes:           # 👈 THÊM PHẦN NÀY
+      - ./logs:/app/logs
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./monitoring/alert.rules.yml:/etc/prometheus/alert.rules.yml
+    ports: ["9090:9090"]
+    restart: unless-stopped
+    networks: [monitoring]
+    
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-storage:/var/lib/grafana
+      # provisioning
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+      # JSON dashboards
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin   # đổi nếu muốn
+    networks: [monitoring]
+
+
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: alertmanager
+    volumes:
+      - ./monitoring/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+    ports: ["9093:9093"]
+    restart: unless-stopped
+    networks: [monitoring]
+
+  # node-exporter:
+  #   image: prom/node-exporter:latest
+  #   container_name: node-exporter
+  #   # network_mode: host     # cần host-ns để đọc /proc
+  #   pid: host
+  #   restart: unless-stopped
+  #   networks: [monitoring]
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    command:
+      - '--web.listen-address=:9100'
+    ports:
+      - "9100:9100"
+    restart: unless-stopped
+    networks: [monitoring]
+  # gpu-exporter:
+  #   image: nvcr.io/nvidia/k8s/dcgm-exporter:latest
+  #   container_name: gpu-exporter
+  #   runtime: nvidia
+  #   environment:
+  #     NVIDIA_VISIBLE_DEVICES: all
+  #   cap_add:
+  #     - SYS_ADMIN         # 👈 THÊM DÒNG NÀY
+  #   ports:
+  #     - "9400:9400"
+  #   restart: unless-stopped
+  #   networks: [monitoring]
+
+  # cadvisor:
+  #   image: gcr.io/cadvisor/cadvisor:latest
+  #   container_name: cadvisor
+  #   ports: ["8081:8080"]
+  #   volumes:
+  #     - /:/rootfs:ro
+  #     - /var/run:/var/run:ro
+  #     - /sys:/sys:ro
+  #     - /var/lib/docker/:/var/lib/docker:ro
+  #   restart: unless-stopped
+  #   networks: [monitoring]
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    ports: ["8081:8080"]
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker:/var/lib/docker:ro    # không có dấu / sau docker
+    restart: unless-stopped
+    privileged: true                          # 👈 thêm dòng này nếu được
+    networks: [monitoring]
+
+  fluent-bit:
+    image: fluent/fluent-bit:latest
+    container_name: fluent-bit
+    volumes:
+      - ./monitoring/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
+      - ./monitoring/parsers.conf:/fluent-bit/etc/parsers.conf
+      - /var/lib/docker:/var/lib/docker:ro
+      - /var/log:/var/log:ro
+      - ./logs:/app/logs:ro
+      - fluentbit-state:/fluent-bit/state
+    ports: ["2020:2020"]
+    restart: unless-stopped
+    networks: [monitoring]
+
+volumes:
+  grafana-storage:
+  fluentbit-state:
+
+networks:
+  monitoring:
