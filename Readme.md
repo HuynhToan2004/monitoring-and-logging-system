@@ -1,4 +1,4 @@
-# License Plate Detection with FastAPI
+# Monitoring and Logging API
 
 This project includes a real-time License Plate Detection API built using FastAPI and YOLOv8. The API allows users to upload images and receive detection results with bounding boxes of license plates.
 This repository contains instructions and scripts to set up monitoring and logging for a machine learning API, using Prometheus, Grafana, and Fluent Bit.
@@ -24,6 +24,12 @@ This project is a part of MLOps cource (CS317.P22), with members:
 - Dependencies: ultralytics (for YOLOv8)
 - Docker
 - FastAPI
+- Prometheus
+- Grafana
+- Node Exporter
+- Fluent Bit
+- Alertmanager
+- 
 ## Setup & Usage
 
 1.  **Clone the Repository:**
