@@ -132,7 +132,7 @@ Once everything is running, you can proceed to simulate traffic and test logging
 > - Live dashboard updates (e.g., request rate, latency, resource usage)
 > - Logs captured from both API and system level via Fluent Bit
 
-![Normal Operation Demo](video_demo/failure_cases.gif)
+![Normal Operation Demo](video_demo/success_cases.gif)
 
 ---
 
