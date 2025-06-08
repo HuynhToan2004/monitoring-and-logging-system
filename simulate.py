@@ -4,9 +4,8 @@ import random
 import os
 
 URL = "http://localhost:8070/predict"
-IMG_DIR = "catdog"
+IMG_DIR = "car_demo"
 
-# Lấy danh sách file ảnh trong thư mục catdog
 images = [os.path.join(IMG_DIR, f) for f in os.listdir(IMG_DIR) if f.lower().endswith(('.jpg', '.jpeg', '.png'))]
 
 for i in range(400):
@@ -16,7 +15,7 @@ for i in range(400):
         with open(img_path, "rb") as f:
             files = {"file": (os.path.basename(img_path), f, "image/jpeg")}
             response = requests.post(URL, files=files)
-            print(f"[{i+1}] Sent {img_path} → Status: {response.status_code}")
+            print(f"[{i+1}] Sent images → Status: {response.status_code}")
     except Exception as e:
         print(f"[{i+1}] Error sending image: {e}")
     

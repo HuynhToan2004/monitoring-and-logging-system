@@ -1,9 +1,10 @@
 # License Plate Detection with FastAPI
 
 This project includes a real-time License Plate Detection API built using FastAPI and YOLOv8. The API allows users to upload images and receive detection results with bounding boxes of license plates.
+This repository contains instructions and scripts to set up monitoring and logging for a machine learning API, using Prometheus, Grafana, and Fluent Bit.
 
 This project is a part of MLOps cource (CS317.P22), with members:
-- Huynh La viet Toan: 22521486
+- Huynh La Viet Toan: 22521486
 - Nguyen Truong Minh Khoa: 22520680
 - Nguyen Thanh Luan: 22520826
 - Luong Truong Thinh: 22521412
@@ -23,34 +24,119 @@ This project is a part of MLOps cource (CS317.P22), with members:
 - Dependencies: ultralytics (for YOLOv8)
 - Docker
 - FastAPI
-
 ## Setup & Usage
 
 1.  **Clone the Repository:**
     ```bash
-    git clone https://github.com/locngocphan12/YOLOv8_LicensePlateDetection.git
-    cd YOLOv8_LicensePlateDetection
+    git clone https://github.com/HuynhToan2004/monitoring-and-logging-system.git
+    cd monitoring-and-logging-system
     ```
+
+2.  **Install Docker and Docker Compose:**
+
+    Make sure Docker and Docker Compose are installed on your machine.
+
+    - **Ubuntu:**
+      ```bash
+      sudo apt update
+      sudo apt install docker.io docker-compose -y
+      sudo systemctl enable docker
+      sudo systemctl start docker
+      ```
+
+    - **macOS / Windows:**
+      Download and install **Docker Desktop** from: https://www.docker.com/products/docker-desktop
+
+    - Verify installations:
+      ```bash
+      docker --version
+      docker compose version
+      ```
+
+3.  **Prepare Configuration Files:**
+
+    Ensure the following files and directories are present in the project:
     
-2. **Running Docker containers:**
+    - `monitoring/prometheus.yml`: Prometheus configuration with targets for your services.
+    - `monitoring/grafana/provisioning/`: Configuration for dashboards and data sources.
+    - `monitoring/fluent-bit.conf`: Log processing pipeline for Fluent Bit.
+    - `monitoring/alert.rules.yml`: (optional) Alert rules for Prometheus + Alertmanager.
+    
+    You may modify them according to your needs.
+
+4.  **Open Required Ports:**
+
+    These services will run on the following default ports:
+
+    | Service        | Port  |
+    |----------------|-------|
+    | Prometheus     | 9090  |
+    | Node Exporter  | 9100  |
+    | Grafana        | 3000  |
+    | Fluent Bit     | 2020  |
+    | Alertmanager   | 9093  |
+    | FastAPI (app)  | 8070  |
+
+    Make sure these ports are not in use.
+
+5.  **Start All Services:**
+
+    Run the following command in the root directory of the project:
+
     ```bash
-    docker-compose up -d
+    docker compose up -d
     ```
-   
-3. **Access the UI:**
-    - Open your web browser and navigate to http://localhost:8070, upload images and receive detection results with bounding boxes of license plates.
 
-## Demo
+    This will start:
+    
+    - Prometheus (metrics collection)
+    - Node Exporter (host metrics)
+    - Grafana (dashboard visualization)
+    - Fluent Bit (logs collector)
+    - Alertmanager (optional alerts)
+    - FastAPI service (monitored API)
 
-### API Inference Service with FastAPI
+6.  **Access the Services:**
 
-![predict_using_fastapi](yolo_detector.gif)
+    | Service       | URL                           |
+    |---------------|-------------------------------|
+    | FastAPI App   | http://localhost:8070         |
+    | Prometheus    | http://localhost:9090         |
+    | Grafana       | http://localhost:3000         |
+    | Fluent Bit    | http://localhost:2020         |
+    | Alertmanager  | http://localhost:9093         |
 
-### Demo video link: 
+    - **Grafana login credentials** (default):
+        - Username: `admin`
+        - Password: `admin` (you should change this)
 
-## Note
-- To see full demo video, access this link: [here](https://drive.google.com/drive/folders/1yMuBndtiyRO6WYN8pirCCLKDye0cDYQ4?usp=sharing) 
-- Feel free to check out this repository for a full MLOps pipeline through the link: [here](https://github.com/locngocphan12/MLOPs-LicensePlateRecognition)
+7.  **Import Grafana Dashboard (Optional):**
+
+    Go to Grafana → Dashboards → Import and upload the provided JSON file (if available), or use the preconfigured provisioning if included.
+
+---
+
+Once everything is running, you can proceed to simulate traffic and test logging, metrics, and alerting functionality.
+## 📺 Demo
+
+### ✅ Normal Operation Monitoring
+> This demo shows:
+> - The fully configured dashboard (Prometheus + Grafana)
+> - Simulated traffic requests sent to the FastAPI endpoint
+> - Live dashboard updates (e.g., request rate, latency, resource usage)
+> - Logs captured from both API and system level via Fluent Bit
+
+![Normal Operation Demo](video_demo/failure_cases.gif)
+
+---
+
+### ⚠️ API Failure Simulation
+> This demo illustrates:
+> - Injected API errors (simulated using random failure in code)
+> - Error logs captured and sent via Fluent Bit
+> - Error rate reflected in the Grafana dashboard
+
+![API Error Simulation](video_demo/failure_cases.gif)
 
 ## Collaborators
 <a href="https://github.com/luanntd">

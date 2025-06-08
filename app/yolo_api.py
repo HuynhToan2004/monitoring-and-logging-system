@@ -58,10 +58,11 @@ def home():
 @app.post("/predict")
 async def predict(file: UploadFile = File(...)):
     REQUEST_TOTAL.inc()
+    if random.random() < 0.7:
+        REQUEST_ERRORS.inc()
+        log.error("Simulated failure injected")
+        raise HTTPException(status_code=500, detail="Simulated failure for testing")
 
-    # if random.random() < 0.5:
-    #     log.error("Fake error triggered!")
-    #     raise Exception("Simulated prediction failure")
     try:
         contents = await file.read()
         image    = cv2.imdecode(np.frombuffer(contents,np.uint8), cv2.IMREAD_COLOR)
